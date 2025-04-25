@@ -5,6 +5,7 @@
 
 const RGB_Color_TypeDef BLACK    = {0,0,0};
 const RGB_Color_TypeDef RED    = {255,0,0};
+const RGB_Color_TypeDef WHITE    = {255,255,255};
 
 uint32_t Pixel_Buf[Pixel_NUM + 1][24] = {0};
 

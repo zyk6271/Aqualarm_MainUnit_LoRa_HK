@@ -136,10 +136,14 @@ static void radio_frame_endunit_parse_valve(rx_format *rx_frame,aqualarm_device_
                 warning_all_clear();
             }
         }
-        else     if(DeviceStatus == ValveClose || DeviceStatus == ValveOpen || DeviceStatus == SlaverSensorLost)
+        else if(DeviceStatus == ValveClose || DeviceStatus == ValveOpen || DeviceStatus == SlaverSensorLost)
         {
             valve_lock();
             valve_close();
+            gateway_control_slaver_control(rx_frame->source_addr,0,rx_frame->rssi_level);
+        }
+        else if(DeviceStatus == SlaverOffline)
+        {
             gateway_control_slaver_control(rx_frame->source_addr,0,rx_frame->rssi_level);
         }
     }

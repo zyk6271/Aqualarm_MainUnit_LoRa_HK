@@ -152,7 +152,7 @@ uint8_t get_valve_status(void)
     return valve_status;
 }
 
-void valve_check(void)
+void valve_check_start(void)
 {
     if(valve_status == VALVE_STATUS_CLOSE)
     {
@@ -185,7 +185,7 @@ void valve_check(void)
 
 void valve_detect_once_timer_callback(void *parameter)
 {
-    valve_check();
+    valve_check_start();
 }
 
 void valve_delay_close_timer_callback(void *parameter)
@@ -334,6 +334,7 @@ void valve_init(void)
     valve_right_turn_back_timer = rt_timer_create("right_turn_back", valve_right_turn_back_timer_callback, RT_NULL, 3000, RT_TIMER_FLAG_ONE_SHOT|RT_TIMER_FLAG_SOFT_TIMER);
     valve_left_turn_check_timer = rt_timer_create("left_turn_check", valve_left_turn_check_timer_callback, RT_NULL, 5000, RT_TIMER_FLAG_ONE_SHOT|RT_TIMER_FLAG_SOFT_TIMER);
     valve_right_turn_check_timer = rt_timer_create("right_turn_check", valve_right_turn_check_timer_callback, RT_NULL, 6000, RT_TIMER_FLAG_ONE_SHOT|RT_TIMER_FLAG_SOFT_TIMER);
+
     if(aq_device_waterleak_find())
     {
         warning_enable(SlaverSensorLeakEvent);
