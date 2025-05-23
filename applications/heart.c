@@ -18,7 +18,7 @@ RNG_HandleTypeDef rng_handle;
 rt_thread_t heart_thread = RT_NULL;
 rt_timer_t heart_connect_timer = RT_NULL;
 
-uint8_t gateway_heart_retry,gateway_connect_done = 0;
+uint8_t gateway_heart_retry = 0;
 uint32_t before_wait_time,after_wait_time = 0;
 
 uint32_t random_second_get(uint32_t min,uint32_t max)
@@ -27,11 +27,6 @@ uint32_t random_second_get(uint32_t min,uint32_t max)
     HAL_RNG_GenerateRandomNumber(&rng_handle, &value);
     second = value % (max - min + 1) + min;
     return second;
-}
-
-uint8_t gateway_connect_done_read(void)
-{
-    return gateway_connect_done;
 }
 
 void gateway_heart_check(void)
@@ -64,12 +59,7 @@ void gateway_connect_start(void)
 
 void heart_connect_timer_callback(void *parameter)
 {
-    if(aq_device_recv_find(aq_gateway_find()) == 1)
-    {
-        gateway_connect_done = 1;
-        wifi_led(1);//online
-    }
-    else
+    if(aq_device_recv_find(aq_gateway_find()) == 0)
     {
         if(gateway_heart_retry < 3)
         {
@@ -80,7 +70,6 @@ void heart_connect_timer_callback(void *parameter)
         else
         {
             wifi_led(2);//fail
-            gateway_connect_done = 1;
         }
     }
 }
@@ -91,14 +80,7 @@ void heart_thread_entry(void *parameter)
     {
         wifi_led(0);
         rt_thread_mdelay(random_second_get(20,40) * 500);//10-20秒
-        if(aq_device_recv_find(aq_gateway_find()) == 0)
-        {
-            gateway_connect_start();
-        }
-        else
-        {
-            gateway_heart_upload_poweron();
-        }
+        gateway_connect_start();
     }
     while (1)
     {
